@@ -2,36 +2,76 @@
 
 namespace anymal {
 
-AnymalState::AnymalState() {
-	this->name = "";
+//-------------------- Constructor --------------------//
+
+AnymalState::AnymalState(int _id)
+	: state_id(_id)
+{
+	simple_worker = [](AnymalEnvironment &environ){};
+}	
+
+AnymalState::AnymalState(int _id, std::function<void (AnymalEnvironment&)> worker)
+	: state_id(_id), simple_worker(worker)
+{}
+
+//-------------------- Work --------------------//
+
+void AnymalState::work(AnymalEnvironment &environ){
+	simple_worker(environ);
 }
 
-AnymalState::AnymalState(std::string name) {
-	this->name = name;
+//-------------------- set & get --------------------//
+
+void AnymalState::setID(int new_id){
+	this->state_id = new_id;
 }
 
-AnymalState::~AnymalState() {
+int AnymalState::getID(){
+	return this->state_id;
 }
 
-void AnymalState::setStateName(std::string name) {
-	this->name = name;
+std::string AnymalState::getDescription(){
+	return this->description;
 }
 
-std::string AnymalState::getStateName() {
-	return this->name;
+void AnymalState::setDescription(std::string description){
+	this->description = description;
 }
 
-std::list<AnymalState>* AnymalState::zip(int nameNum, ...) {
-	std::list<AnymalState>* cycle = new std::list<AnymalState>();
+//-------------------- Multi-states Helper --------------------//
+
+AnymalState::ZIP::ZIP(int num, ...){
 	va_list ap;
-	va_start(ap, nameNum);
-	for (int i = 0; i < nameNum; i++) {
-		std::string name = (std::string)va_arg(ap, char *);
-		cycle->push_back(AnymalState(name));
+	va_start(ap, num);
+	for (int i = 0; i < num; i++) {
+		AnymalState *state = (AnymalState*)va_arg(ap, AnymalState*);
+		zip[state->getID()] = state;
 	}
 	va_end(ap);
+}
 
-	return cycle;
+AnymalState* AnymalState::ZIP::getState(int id){
+	if(zip.find(id) != zip.end() && zip.find(id)->second->getID() == id){
+		return zip.find(id)->second;
+	}
+
+	std::map<int, AnymalState*>::iterator iter;
+	for(iter = zip.begin(); iter != zip.end(); ++iter){
+		if(iter->second->getID() == id){
+			AnymalState *state = iter->second;
+
+			zip.erase(iter);
+			zip[id] = state;
+
+			return state;
+		}
+	}
+
+	return NULL;
+}
+
+void AnymalState::ZIP::setState(AnymalState *state){
+	zip[state->getID()] = state;
 }
 
 }

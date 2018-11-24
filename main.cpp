@@ -1,102 +1,100 @@
+/*
+	main.cpp
+
+	Author @ Juan Lee (juanlee@kaist.ac.kr)
+*/
+
 #include "Anymal.hpp"
+#include "AnymalState.hpp"
+#include "AnymalEnvironment.hpp"
 using namespace anymal;
 
-class Hamster : public Anymal{
-public:
-	Hamster();
-	Hamster(std::string stateName);
-	~Hamster();
+#include <unistd.h>
+#include <stdlib.h>
+#include <iostream>
+using namespace std;
 
-private:
-	void init(std::string stateName);
-
-public:
-	void update(long long time);								// overall update method
-
-private:
-	long long elapsed;
-	std::list<AnymalState>* SleepCycle;
-	std::list<AnymalState>* MealCycle;
-	std::list<AnymalState>* ActivityCycle;
-	std::list<AnymalState>* InteractionCycle;
+enum {
+	SLEEP,
+	SIT,
+	EAT,
+	DRINK,
 };
 
-/*
-	Implementations
-*/
-Hamster::Hamster() : Anymal() {
-	this->init("sitting"); // default state
-}
-
-Hamster::Hamster(std::string stateName) : Anymal() {
-	this->init(stateName);
-}
-
-Hamster::~Hamster() {
-	delete SleepCycle;
-	delete MealCycle;
-	delete ActivityCycle;
-	delete InteractionCycle;
-}
-
-void Hamster::init(std::string stateName){
-	elapsed = 0;
-	this->setState(AnymalState(stateName));
-
-	SleepCycle = AnymalState::zip(2, 
-		"sleep", 
-		"sleep_talking"
-	);
-
-	MealCycle = AnymalState::zip(3, 
-		"meal", 
-		"drink", 
-		"ask_meal"
-	);
-
-	ActivityCycle = AnymalState::zip(6, 
-		"running", 
-		"walking", 
-		"washing", 
-		"sitting", 
-		"lying", 
-		"standing"
-	);
-
-	InteractionCycle = AnymalState::zip(3, 
-		"with_object",
-		"with_user",
-		"with_environment"
-	);
-}
-
-void Hamster::update(long long time){
-	//switch(this->getState().getStateName()){
-	//default:
-	//break;
-	//}
-
-	elapsed += time;
-	if((int)(elapsed/1000) != ((int)(elapsed-time)/1000)){
-		this->setVariable("activity", this->getVariable("activity") + 0.01);
-		this->setVariable("fatigue", this->getVariable("fatigue") + 0.01);
-		this->setVariable("hungry", this->getVariable("hungry") + 0.01);
-		this->setVariable("thirsty", this->getVariable("thirsty") + 0.01);
-	}
-}
-
-/*
-	main: void -> int
-*/
 int main(){
-	Hamster hamster("washing");
+	AnymalState sleep(SLEEP, [](AnymalEnvironment &env){
+		env.setFloatValue("tired", env.getFloatValue("tired") - 0.01);
 
-	AnymalTime time;
+		float tired = env.getFloatValue("tired");
+		if(tired < 0.5){
+			env.setNextState(SIT);
+		}
+	});
+	sleep.setDescription("Hamster is Sleeping...");
+
+	AnymalState sit(SIT, [](AnymalEnvironment &env){
+		env.setFloatValue("tired", env.getFloatValue("tired") + 0.01);
+		env.setFloatValue("hungry", env.getFloatValue("hungry") + 0.01);
+
+		float tired = env.getFloatValue("tired");
+		if(tired > 0.5){
+			env.setNextState(SLEEP);
+		}
+
+		float hungry = env.getFloatValue("hungry");
+		if(hungry > 0.5){
+			env.setNextState(EAT);
+		}
+	});
+	sit.setDescription("Hamster is sitting! It is awake!");
+
+	AnymalState eat(EAT, [](AnymalEnvironment &env){
+		env.setFloatValue("thirsty", env.getFloatValue("thirsty") + 0.01);
+		env.setFloatValue("hungry", env.getFloatValue("hungry") - 0.01);
+
+		float hungry = env.getFloatValue("hungry");
+		if(hungry < 0.5){
+			env.setNextState(SIT);
+		}
+
+		float thirsty = env.getFloatValue("thirsty");
+		if(thirsty > 0.5){
+			env.setNextState(EAT);
+		}
+	});
+	eat.setDescription("Don't touch! I am eating");
+
+	AnymalState drink(DRINK, [](AnymalEnvironment &env){
+		env.setFloatValue("thirsty", env.getFloatValue("thirsty") - 0.01);
+
+		float thirsty = env.getFloatValue("thirsty");
+		if(thirsty < 0.5){
+			env.setNextState(EAT);
+		}
+	});
+	drink.setDescription("You want to drink with me?");
+
+	Anymal hamster;
+	hamster.setState(&sleep);
+	hamster.setState(&sit);
+	hamster.setState(&eat);
+	hamster.setState(&drink);
+
+	hamster.setCurrentState(SIT);
+
+	hamster.getEnvironment().setFloatValue("tired", 0.1);
+	hamster.getEnvironment().setFloatValue("hungry", 0.2);
+	hamster.getEnvironment().setFloatValue("thirsty", 0.2);
+
 	while(true){
-		hamster.update(time.tick());
+		hamster.update();
 
-		// Display code using Hamster
+		system("clear");
+		cout << hamster.getState(hamster.getCurrentState())->getDescription() << endl << endl;
+		cout << "Tired\t| " << hamster.getEnvironment().getFloatValue("tired") << endl;
+		cout << "Hungry\t| " << hamster.getEnvironment().getFloatValue("hungry") << endl;
+		cout << "Thirsty\t| " << hamster.getEnvironment().getFloatValue("thirsty") << endl;
+
+		usleep(100);
 	}
-
-	return 0;
 }

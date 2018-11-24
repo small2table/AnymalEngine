@@ -5,39 +5,63 @@ namespace anymal{
 //-------------------- Constructors --------------------//
 
 Anymal::Anymal(){
-}
+	current_state_id = -1;
 
-Anymal::Anymal(AnymalState state){
-	this->state = state;
+	// set up initial environments
+	environ.setIntegerValue("__STATE_MODIFIED_TO", -1);
+	environ.setIntegerValue("__STATE_LAST_WORKED", -1);
+	environ.setBoolValue("__STATE_MODIFIED", false);
 }
 
 Anymal::~Anymal(){
+	for(auto iter = states.begin(); iter != states.end(); ++iter){
+		delete iter->second;
+	}
 }
 
-//-------------------- States --------------------//
+//-------------------- update --------------------//
 
-AnymalState Anymal::setState(AnymalState state){
-	AnymalState old = this->state;
-	this->state = state;
-	return old;
+void Anymal::update(){
+	long long elapsed = time.tick();
+
+	if(current_state_id != -1){
+		environ.setLongLongValue("__STATE_ELAPSED", elapsed);
+		states[current_state_id]->work(environ);
+		environ.setIntegerValue("__STATE_LAST_WORKED", current_state_id);
+
+		if(environ.getBoolValue("__STATE_MODIFIED")){
+			int new_id = environ.getIntegerValue("__STATE_MODIFIED_TO");
+			current_state_id = new_id;
+		}
+	}
 }
 
-AnymalState Anymal::getState(){
-	return this->state;
+//-------------------- states --------------------//
+
+void Anymal::setState(AnymalState *state){
+	states[state->getID()] = state;
 }
 
-//-------------------- Variables --------------------//
-
-float Anymal::getVariable(std::string type){
-	if(this->variables.find(type) == this->variables.end())
-		return -1;
-	return this->variables.find(type)->second;
+AnymalState* Anymal::getState(int id){
+	return states[id];
 }
 
-float Anymal::setVariable(std::string type, float variable){
-	float old = this->getVariable(type);
-	this->variables[type] = variable;
-	return old;
+//-------------------- states --------------------//
+
+void Anymal::setEnvironment(AnymalEnvironment& environ){
+	environ = environ;
+}
+
+AnymalEnvironment& Anymal::getEnvironment(){
+	return environ;
+}
+
+void Anymal::setCurrentState(int id){
+	current_state_id = id;
+}
+
+int Anymal::getCurrentState(){
+	return current_state_id;
 }
 
 }

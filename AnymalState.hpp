@@ -3,31 +3,55 @@
 	- holding state information
 
 	Author @ Kihoon Kwon (kwon9804@kaist.ac.kr)
+	Editor @ Juan Lee (juanlee@kaist.ac.kr)
 */
 
 #ifndef __ANYMAL_STATE__
 #define __ANYMAL_STATE__
 
-#include <string>
-#include <list>
+#include "AnymalEnvironment.hpp"
+#include <map>
 #include <cstdarg>
+#include <string>
+#include <functional>
 
 namespace anymal {
 
 class AnymalState {
 private:
-	std::string name;
+	int state_id;
+	std::string description;
+
+	std::function<void (AnymalEnvironment&)> simple_worker;
 
 public:
-	AnymalState();
-	AnymalState(std::string name);
-	~AnymalState();
+	AnymalState(int _id);
+	AnymalState(int _id, std::function<void (AnymalEnvironment&)> worker);
 
-	void setStateName(std::string name);
-	std::string getStateName();
+public:
+	virtual void work(AnymalEnvironment &environ);
 
-	// return cycle of states
-	static std::list<AnymalState>* zip(int nameNum, ...);
+	int getID();
+	void setID(int id);
+
+	std::string getDescription();
+	void setDescription(std::string description);
+
+	//-------------------- Multi-state --------------------//
+
+	class ZIP;
+};
+
+class AnymalState::ZIP{
+private:
+	std::map<int, AnymalState*> zip;
+
+public:
+	ZIP(int num, ...);
+
+public:
+	AnymalState* getState(int id);
+	void setState(AnymalState* state);
 };
 
 }

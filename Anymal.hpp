@@ -8,30 +8,37 @@
 #ifndef __ANYMAL_ENGINE__
 #define __ANYMAL_ENGINE__
 
-#include <string>
-#include <map>
-
+#include "AnymalEnvironment.hpp"
 #include "AnymalState.hpp"
 #include "AnymalTime.hpp"
+
+#include <string>
+#include <map>
 
 namespace anymal{
 
 class Anymal {
 private:
-	AnymalState state;
-	std::map<std::string, float> variables;
+	AnymalEnvironment environ;
+	AnymalTime time;
+	std::map<int, AnymalState*> states;
+	int current_state_id;
 
 public:
 	Anymal();
-	Anymal(AnymalState state);
 	~Anymal();
 
 public:
-	AnymalState setState(AnymalState state);
-	AnymalState getState();
+	void update();
 
-	float getVariable(std::string type);
-	float setVariable(std::string type, float variable);
+	void setState(AnymalState* state);
+	AnymalState* getState(int id);
+
+	void setCurrentState(int id);
+	int getCurrentState();
+
+	void setEnvironment(AnymalEnvironment &environ);
+	AnymalEnvironment& getEnvironment();
 };
 
 }
