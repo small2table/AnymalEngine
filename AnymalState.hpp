@@ -19,6 +19,7 @@ private:
 	std::string name;
 
 public:
+	AnymalState();
 	AnymalState(std::string name);
 	~AnymalState();
 
@@ -26,7 +27,7 @@ public:
 	std::string getStateName();
 
 	// return cycle of states
-	static std::list<std::string> * zip(int nameNum, ...);
+	static std::list<AnymalState>* zip(int nameNum, ...);
 };
 
 }
