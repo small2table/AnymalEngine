@@ -12,16 +12,24 @@
 
 namespace anymal{
 
-template <typename T>
-class AnymalVariable {
+class AnymalVariableTemplate {
+public:
+	AnymalVariableTemplate(const std::string& name)
+	: type(name){}
+
 private:
 	std::string type;
+};
+
+template <typename T>
+class AnymalVariable : public AnymalVariableTemplate {
+private:
 	T *value;
 
 public:
-	AnymalVariable();
-	AnymalVariable(std::string type);
-	AnymalVariable(std::string type, T *value);
+	AnymalVariable() : AnymalVariableTemplate(""), value(NULL) {}
+	AnymalVariable(std::string type) : AnymalVariableTemplate(type), value(NULL) {}
+	AnymalVariable(std::string type, T *_value) : AnymalVariableTemplate(type), value(_value) {}
 	~AnymalVariable();
 
 public:
@@ -32,28 +40,10 @@ public:
 	T* changeValue(T* value);
 
 public:
-	friend AnymalEngine;
+	friend class AnymalEngine;
 };
 
 //-------------------- Constructors --------------------//
-
-template <typename T>
-AnymalVariable<T>::AnymalVariable(){
-	this->type = "";
-	this->value = NULL;
-}
-
-template <typename T>
-AnymalVariable<T>::AnymalVariable(std::string type){
-	this->type = type;
-	this->value = NULL;
-}
-
-template <typename T>
-AnymalVariable<T>::AnymalVariable(std::string type, T* value){
-	this->type = type;
-	this->value = value;
-}
 
 template <typename T>
 AnymalVariable<T>::~AnymalVariable(){

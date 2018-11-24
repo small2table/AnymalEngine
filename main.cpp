@@ -1,17 +1,15 @@
 #include <iostream>
 using namespace std;
 
-#include "AnymalVariable.hpp"
-using namespace Anymal;
+#include "AnymalEngine.hpp"
+using namespace anymal;
 
 int main(){
-	AnymalVariable<float> floatVariable("hunger");
-	floatVariable.changeValue(new float(3.14));
-	cout<< *floatVariable.getValue() << endl;
+	AnymalEngine engine(new AnymalState("Initial State"));
 
-	AnymalVariable<string> stringVariable("name");
-	stringVariable.changeValue(new string("new name"));
-	cout<< *stringVariable.getValue() << endl;
+	AnymalState *old = engine.changeState(new AnymalState("Update"));
+	cout<< old->getStateName() << endl;
+	delete old;		// user is responsible for mamory leak
 
 	return 0;
 }

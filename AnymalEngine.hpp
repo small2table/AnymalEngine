@@ -18,19 +18,19 @@ namespace anymal{
 
 class AnymalEngine {
 private:
-	AnymalState state;
-	std::map<std::string, AnymalVariable*> variables;
+	AnymalState *state;
+	std::map<std::string, AnymalVariableTemplate* > variables;
 
 public:
 	AnymalEngine();
-	AnymalEngine(AnymalState state);
+	AnymalEngine(AnymalState *state);
+	~AnymalEngine();
 
 public:
-	AnymalState changeState(AnymalState state);
-	AnymalState getState();
+	AnymalState* changeState(AnymalState *state);
+	AnymalState* getState();
 
-	AnymalVariable* findVariable(std::string type);
-	AnymalVariable* changeVariable(AnymalVariable *variable);
+	AnymalVariableTemplate* findVariable(std::string type);
 };
 
 }

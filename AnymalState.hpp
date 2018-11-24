@@ -1,3 +1,10 @@
+/*
+	AnymalState.hpp
+	- holding state information
+
+	Author @ Kihoon Kwon (kwon9804@kaist.ac.kr)
+*/
+
 #ifndef __ANYMAL_STATE__
 #define __ANYMAL_STATE__
 
@@ -5,26 +12,23 @@
 #include <list>
 #include <cstdarg>
 
-using namespace std;
-
 namespace anymal {
-	class AnymalState {
-	private:
-		string name;
-	public:
-	private:
-	public:
-		AnymalState(string name);
-		~AnymalState();
 
-		void setStateName(string name);
-		string getStateName();
+class AnymalState {
+private:
+	std::string name;
 
-		// return cycle of states
-		static list<string> * zip(int nameNum, ...);
+public:
+	AnymalState(std::string name);
+	~AnymalState();
 
-	};
+	void setStateName(std::string name);
+	std::string getStateName();
+
+	// return cycle of states
+	static std::list<std::string> * zip(int nameNum, ...);
+};
+
 }
 
-
-#endif
+#endif /* __ANYMAL_STATE__ */

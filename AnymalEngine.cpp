@@ -4,39 +4,39 @@ namespace anymal{
 
 //-------------------- Constructors --------------------//
 
-AnymalEngine::AnymalEngine(){
-
+AnymalEngine::AnymalEngine()
+{
+	this->state = NULL;
 }
 
-AnymalEngine::AnymalEngine(AnymalState state){
+AnymalEngine::AnymalEngine(AnymalState *state){
 	this->state = state;
+}
+
+AnymalEngine::~AnymalEngine(){
+	if(this->state != NULL){
+		delete this->state;
+	}
 }
 
 //-------------------- States --------------------//
 
-AnymalState AnymalEngine::changeState(AnymalState state){
-	AnymalState old = this->state;
+AnymalState* AnymalEngine::changeState(AnymalState *state){
+	AnymalState *old = this->state;
 	this->state = state;
 	return old;
 }
 
-AnymalState AnymalEngine::getState(){
+AnymalState* AnymalEngine::getState(){
 	return this->state;
 }
 
 //-------------------- Variables --------------------//
 
-AnymalVariable* AnymalEngine::findVariable(std::string type){
+AnymalVariableTemplate* AnymalEngine::findVariable(std::string type){
+	if(this->variables.find(type) == this->variables.end())
+		return NULL;
 	return this->variables.find(type)->second;
-}
-
-AnymalVariable* AnymalEngine::changeVariable(AnymalVariable *variable){
-	AnymalVariable *old = NULL;
-	if(this->variables.find(variable->type) != this->variables.end())
-		old = this->variables.find(variable->type)->second;
-
-	this->variable[variable->type] = variable;
-	return old;
 }
 
 }
