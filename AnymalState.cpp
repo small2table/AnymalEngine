@@ -7,7 +7,7 @@ namespace anymal {
 AnymalState::AnymalState(int _id)
 	: state_id(_id)
 {
-	simple_worker = [](AnymalEnvironment &environ){};
+	simple_worker = [](AnymalEnvironment &env){};
 }	
 
 AnymalState::AnymalState(int _id, std::function<void (AnymalEnvironment&)> worker)
@@ -16,8 +16,8 @@ AnymalState::AnymalState(int _id, std::function<void (AnymalEnvironment&)> worke
 
 //-------------------- Work --------------------//
 
-void AnymalState::work(AnymalEnvironment &environ){
-	simple_worker(environ);
+void AnymalState::work(AnymalEnvironment &env){
+	simple_worker(env);
 }
 
 //-------------------- set & get --------------------//

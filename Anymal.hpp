@@ -20,7 +20,7 @@ namespace anymal{
 
 class Anymal {
 private:
-	AnymalEnvironment environ;
+	AnymalEnvironment env;
 	AnymalTime time;
 	std::map<int, AnymalState*> states;
 	int current_state_id;
@@ -39,7 +39,7 @@ public:
 	void setCurrentState(int id);
 	int getCurrentState();
 
-	void setEnvironment(AnymalEnvironment &environ);
+	void setEnvironment(AnymalEnvironment &env);
 	AnymalEnvironment& getEnvironment();
 };
 

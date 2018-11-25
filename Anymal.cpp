@@ -7,10 +7,10 @@ namespace anymal{
 Anymal::Anymal(){
 	current_state_id = -1;
 
-	// set up initial environments
-	environ.setIntegerValue("__STATE_MODIFIED_TO", -1);
-	environ.setIntegerValue("__STATE_LAST_WORKED", -1);
-	environ.setBoolValue("__STATE_MODIFIED", false);
+	// set up initial envments
+	env.setIntegerValue("__STATE_MODIFIED_TO", -1);
+	env.setIntegerValue("__STATE_LAST_WORKED", -1);
+	env.setBoolValue("__STATE_MODIFIED", false);
 }
 
 Anymal::~Anymal(){
@@ -25,12 +25,12 @@ void Anymal::update(){
 	long long elapsed = time.tick();
 
 	if(current_state_id != -1){
-		environ.setLongLongValue("__STATE_ELAPSED", elapsed);
-		states[current_state_id]->work(environ);
-		environ.setIntegerValue("__STATE_LAST_WORKED", current_state_id);
+		env.setLongLongValue("__STATE_ELAPSED", elapsed);
+		states[current_state_id]->work(env);
+		env.setIntegerValue("__STATE_LAST_WORKED", current_state_id);
 
-		if(environ.getBoolValue("__STATE_MODIFIED")){
-			int new_id = environ.getIntegerValue("__STATE_MODIFIED_TO");
+		if(env.getBoolValue("__STATE_MODIFIED")){
+			int new_id = env.getIntegerValue("__STATE_MODIFIED_TO");
 			current_state_id = new_id;
 		}
 	}
@@ -52,12 +52,12 @@ AnymalState* Anymal::getState(int id){
 
 //-------------------- states --------------------//
 
-void Anymal::setEnvironment(AnymalEnvironment& environ){
-	this->environ = environ;
+void Anymal::setEnvironment(AnymalEnvironment& env){
+	this->env = env;
 }
 
 AnymalEnvironment& Anymal::getEnvironment(){
-	return environ;
+	return env;
 }
 
 void Anymal::setCurrentState(int id){

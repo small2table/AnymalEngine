@@ -29,7 +29,7 @@ public:
 	AnymalState(int _id, std::function<void (AnymalEnvironment&)> worker);
 
 public:
-	virtual void work(AnymalEnvironment &environ);
+	virtual void work(AnymalEnvironment &env);
 
 	int getID();
 	void setID(int id);
