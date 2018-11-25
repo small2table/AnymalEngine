@@ -1,0 +1,14 @@
+tired=0.3
+tired_criteria=0.5
+tired_decrement=0.1
+tired_increment=0.1
+
+hungry=0.2
+hungry_criteria=0.5
+hungry_increment=0.1
+hungry_decrement=0.1
+
+thirsty=0.1
+thirsty_criteria=0.5
+thirsty_increment=0.1
+thirsty_decrement=0.1

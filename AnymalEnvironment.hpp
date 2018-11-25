@@ -10,6 +10,7 @@
 
 #include <map>
 #include <string>
+#include <fstream>
 
 namespace anymal {
 
@@ -31,6 +32,9 @@ public:
 	bool getBoolValue(std::string key);
 	long getLongValue(std::string key);
 	long long getLongLongValue(std::string key);
+
+	void loadEnvironment(std::string from);
+	void saveEnvironment(std::string to);
 
 public:
 	bool getStateModified();

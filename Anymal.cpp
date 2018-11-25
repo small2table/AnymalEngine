@@ -42,6 +42,10 @@ void Anymal::setState(AnymalState *state){
 	states[state->getID()] = state;
 }
 
+void Anymal::setState(int id, std::function<void (AnymalEnvironment&)> worker){
+	states[id] = new AnymalState(id, worker);
+}
+
 AnymalState* Anymal::getState(int id){
 	return states[id];
 }
@@ -49,7 +53,7 @@ AnymalState* Anymal::getState(int id){
 //-------------------- states --------------------//
 
 void Anymal::setEnvironment(AnymalEnvironment& environ){
-	environ = environ;
+	this->environ = environ;
 }
 
 AnymalEnvironment& Anymal::getEnvironment(){

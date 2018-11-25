@@ -14,6 +14,7 @@
 
 #include <string>
 #include <map>
+#include <functional>
 
 namespace anymal{
 
@@ -32,6 +33,7 @@ public:
 	void update();
 
 	void setState(AnymalState* state);
+	void setState(int id, std::function<void (AnymalEnvironment&)> worker);
 	AnymalState* getState(int id);
 
 	void setCurrentState(int id);

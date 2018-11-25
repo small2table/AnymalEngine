@@ -1,4 +1,5 @@
 #include "AnymalEnvironment.hpp"
+#include <iostream>
 
 namespace anymal {
 
@@ -53,6 +54,44 @@ long AnymalEnvironment::getLongValue(std::string key){
 
 long long AnymalEnvironment::getLongLongValue(std::string key){
 	return std::stoll(variables[key]);
+}
+
+//-------------------- load & save --------------------//
+
+void AnymalEnvironment::loadEnvironment(std::string from){
+	std::ifstream in;
+	in.open(from);
+	if(in.is_open()){
+		std::string line;
+		while(getline(in, line)){
+			line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
+			if(line == "") continue;
+
+			int separator = line.find_first_of("=");
+
+			std::string key = line.substr(0, separator);
+			std::string value = line.substr(separator + 1);
+
+			key.erase(remove_if(key.begin(), key.end(), isspace), key.end());
+			value.erase(remove_if(value.begin(), value.end(), isspace), value.end());
+
+			variables[key] = value;
+		}
+		in.close();
+	}
+}
+
+void AnymalEnvironment::saveEnvironment(std::string to){
+	std::ofstream out;
+	out.open(to);
+
+	std::map<std::string, std::string>::iterator iter;
+	while(iter != variables.end()){
+		out<<iter->first<<"="<<iter->second<<'\n';
+		++iter;
+	}
+
+	out.close();
 }
 
 //-------------------- state update --------------------//
